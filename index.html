@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Transaction Smart Note & Categorization Study</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        tng: {
+                            blue: '#2563EB',
+                            dark: '#1D4ED8',
+                            light: '#EFF6FF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+        .receipt-card-shadow {
+            box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.07), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col pb-24 lg:pb-0">
+
+    <!-- Top Navigation Bar (Clean Light Surface with Royal Blue Accents, Developer Tab Hidden by Default) -->
+    <header class="bg-white/95 backdrop-blur-md text-slate-900 sticky top-0 z-40 shadow-xs border-b border-slate-200/90">
+        <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <!-- Triple-tap / Triple-click logo trigger for Developer Passcode Modal -->
+            <div onclick="handleLogoSecretTap()" class="flex items-center space-x-2.5 cursor-pointer select-none" title="Daily Transaction Smart Note Study">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-lg shadow-xs flex-shrink-0 active:scale-95 transition">
+                    <i class="ph-bold ph-notebook text-xl"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="font-bold text-sm sm:text-lg text-slate-900 leading-tight truncate flex items-center gap-2">
+                        <span>Smart Note Study</span>
+                        <span class="bg-blue-50 text-blue-700 text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-blue-200 hidden md:inline-block">Transaction Research</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-500 truncate hidden sm:block">Gemini-Assisted Transaction Smart Note Study</p>
+                </div>
+            </div>
+
+            <!-- Participant Steps Navigation (Developer Tab Hidden Until Unlocked) -->
+            <div class="flex items-center space-x-1.5 sm:space-x-2">
+                <button onclick="switchMainView('guide')" id="navBtn-guide" class="min-h-[42px] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 text-white shadow-xs transition flex items-center gap-1.5">
+                    <i class="ph-bold ph-book-open-text text-base"></i>
+                    <span>1. Guide</span>
+                    <span class="hidden sm:inline">& Consent</span>
+                </button>
+                <button onclick="attemptEnterWorkspace()" id="navBtn-workspace" class="min-h-[42px] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+                    <i class="ph-bold ph-scan text-base"></i>
+                    <span>2. Upload & Note</span>
+                    <span id="batchQueueBadge" class="bg-blue-100 text-blue-800 text-[11px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+                <!-- Hidden by default for regular participants; only revealed when unlocked -->
+                <button onclick="switchMainView('developer')" id="navBtn-developer" class="hidden min-h-[42px] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-indigo-800 hover:bg-indigo-100 transition items-center gap-1.5 border border-indigo-300 bg-indigo-50">
+                    <i class="ph-bold ph-database text-base"></i>
+                    <span class="hidden sm:inline">Developer Dataset (Admin)</span>
+                    <span class="sm:hidden">Admin</span>
+                    <span id="devTotalBadge" class="bg-indigo-600 text-white text-[11px] font-extrabold px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6">
+
+        <!-- =================================================================== -->
+        <!-- PAGE 1: PARTICIPANT GUIDE & TERMS AND CONDITIONS (MOBILE OPTIMIZED) -->
+        <!-- =================================================================== -->
+        <div id="view-guide" class="space-y-4 sm:space-y-6 max-w-5xl mx-auto">
+            
+            <!-- Hero Welcome Banner (Crisp Royal Blue Aesthetic) -->
+            <div class="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 rounded-3xl p-5 sm:p-8 text-white shadow-md relative overflow-hidden border border-blue-500/30">
+                <div class="relative z-10 max-w-3xl">
+                    <span class="inline-flex items-center gap-1.5 bg-white/15 text-blue-50 border border-white/25 text-xs font-bold px-3 py-1 rounded-full mb-2.5">
+                        <i class="ph-fill ph-device-mobile"></i> Mobile-Friendly Financial Study
+                    </span>
+                    <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight leading-snug">Can Real User "Smart Notes" Improve Transaction Categorization?</h2>
+                    <p class="text-xs sm:text-base text-blue-50/95 mt-2 leading-relaxed">
+                        Raw eWallet statements often show ambiguous names like <code class="bg-black/15 px-1.5 py-0.5 rounded text-white">PINDUODUO</code>, <code class="bg-black/15 px-1.5 py-0.5 rounded text-white">TAOBAO</code>, or person-to-person transfers like <code class="bg-black/15 px-1.5 py-0.5 rounded text-white">ALEX TAN</code>. Upload your transaction screenshots and add a quick <strong>Smart Note</strong> & <strong>Spending Category</strong> to help us research automated spending classification.
+                    </p>
+                </div>
+                <i class="ph-duotone ph-notebook text-[130px] text-white/10 absolute -right-4 -bottom-8 pointer-events-none"></i>
+            </div>
+
+            <div class="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900" role="note"><strong>Prototype — not open for participant recruitment.</strong> Local OCR is enabled, but this static page's researcher authentication, consent records and data storage must be secured and approved before collecting genuine financial information.</div>
+
+            <!-- Step-by-Step Participant Guide -->
+            <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/90 shadow-xs">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200/60">Study Workflow</span>
+                        <h3 class="text-base sm:text-xl font-bold text-slate-800 mt-1">Participant Guide: 4 Quick Steps on Your Phone</h3>
+                    </div>
+                    <span class="text-xs text-slate-400 font-medium hidden sm:inline">2–5 mins</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/70 flex items-start sm:flex-col justify-between gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-xs">1</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-slate-800">Screenshot Receipt</h4>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Take screenshots of your daily transaction <strong>"Details"</strong> screen from your eWallet app.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/70 flex items-start sm:flex-col justify-between gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-xs">2</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-slate-800">Private Local OCR</h4>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Gemini AI extracts screenshot details for review. Screenshot images are sent to Google Gemini via a private-key server endpoint. Do not use private transactions until the study is approved.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/70 flex items-start sm:flex-col justify-between gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-xs">3</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-slate-800">Pick Category & Note</h4>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Choose the <strong>Spending Category</strong> and type a short <strong>Smart Note</strong> explaining what you bought or paid for.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/70 flex items-start sm:flex-col justify-between gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0 shadow-xs">4</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-slate-800">Submit All</h4>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Once every screenshot shows <strong>"Ready"</strong>, tap <strong>Submit All to Study</strong> to finish.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Example of Why Smart Notes Matter for Categorization -->
+                <div class="mt-5 bg-blue-50/60 rounded-2xl p-4 border border-blue-200/70">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-800 mb-2.5 flex items-center gap-1.5">
+                        <i class="ph-fill ph-lightbulb text-base text-blue-600"></i> Example: Raw Statement vs. Your Smart Note
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs">
+                        <div class="bg-white p-3 rounded-xl border border-blue-100">
+                            <div class="font-bold text-slate-800">Raw OCR: PINDUODUO (-RM9.35)</div>
+                            <div class="text-rose-600 text-[11px] mt-0.5">❌ Ambiguous merchant name</div>
+                            <div class="mt-1.5 pt-1.5 border-t border-slate-100 text-blue-800 font-medium">
+                                ✓ Smart Note: "Acrylic desk organizer for study table" → <strong>Education & Office</strong>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-blue-100">
+                            <div class="font-bold text-slate-800">Raw OCR: ALEX TAN (-RM54.07)</div>
+                            <div class="text-rose-600 text-[11px] mt-0.5">❌ Looks like generic peer transfer</div>
+                            <div class="mt-1.5 pt-1.5 border-t border-slate-100 text-blue-800 font-medium">
+                                ✓ Smart Note: "Split bill for Japanese ramen dinner" → <strong>Food & Dining</strong>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-blue-100">
+                            <div class="font-bold text-slate-800">Raw OCR: SHANNELL (+RM100.00)</div>
+                            <div class="text-rose-600 text-[11px] mt-0.5">❌ Remarks only say "from Shannell"</div>
+                            <div class="mt-1.5 pt-1.5 border-t border-slate-100 text-blue-800 font-medium">
+                                ✓ Smart Note: "Friend's share for weekend hotel stay" → <strong>Travel & Hotel</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms & Conditions + Consent Box (16px inputs to prevent iOS/Android auto-zoom) -->
+            <div class="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/90 shadow-xs space-y-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200 flex-shrink-0">
+                        <i class="ph-bold ph-shield-check text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-800">Terms & Conditions & Participant Consent</h3>
+                        <p class="text-xs text-slate-500">Please review and accept before uploading your screenshots.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 max-h-52 overflow-y-auto custom-scrollbar text-xs text-slate-600 space-y-2.5 leading-relaxed">
+                    <p><strong class="text-slate-800">1. Research Purpose:</strong> This study investigates how user-provided "Smart Notes" help classify daily financial transactions into accurate spending categories compared to raw statement text alone. It is an independent research tool.</p>
+                    <p><strong class="text-slate-800">2. What We Record (Categorization Data Only):</strong> The intended study fields are <em>amount, transaction type, reviewed merchant/context, privacy-reviewed remarks, coarse date/time, participant response and Smart Note</em>. Review and remove identifiers before confirming.</p>
+                    <p><strong class="text-emerald-700">3. What We DO NOT Record (Strict Privacy Protection):</strong> To protect your financial privacy, OCR sends the uploaded image to Google Gemini for extraction. The researcher export is designed to exclude <em>Wallet Ref, Transaction No., DuitNow Ref and raw screenshot images</em>. Google may process uploaded images under its applicable service terms. Automated masking is imperfect; review all merchant names, remarks and notes for personal information before saving. This standalone prototype still needs an approved, secure study backend and collection approval.</p>
+                    <p><strong class="text-slate-800">4. Participant Control:</strong> You can inspect and edit all extracted text using the "Edit" button or remove any screenshot (`X`) before submitting.</p>
+                </div>
+
+                <!-- Participant ID & Consent Checkbox -->
+                <div class="pt-1 space-y-3.5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                        <div>
+                            <label for="consentParticipantId" class="text-xs font-bold uppercase tracking-wider text-slate-700 block">
+                                Your Participant ID / Alias
+                            </label>
+                            <p class="text-xs text-slate-500">Used to group your submitted transactions in the study.</p>
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <input id="consentParticipantId" type="text" value="P-2026-089" 
+                                class="w-full sm:w-48 min-h-[46px] bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-base font-bold text-slate-800 focus:border-blue-600 outline-none">
+                        </div>
+                    </div>
+
+                    <label class="flex items-start gap-3.5 cursor-pointer select-none p-4 rounded-2xl border border-slate-200 hover:bg-blue-50/40 active:bg-blue-50 transition">
+                        <input id="termsCheckbox" type="checkbox" onchange="toggleConsentButton()" class="mt-0.5 w-6 h-6 accent-blue-600 rounded cursor-pointer flex-shrink-0">
+                        <span class="text-xs sm:text-sm text-slate-700 font-medium leading-snug">
+                            I have read the <strong>Participant Guide</strong> and agree to the <strong>Terms & Conditions</strong>. I consent to contributing my extracted transaction details, Smart Notes, and categories.
+                        </span>
+                    </label>
+
+                    <div class="pt-1">
+                        <button id="proceedToUploadBtn" onclick="acceptTermsAndProceed()" disabled
+                            class="w-full sm:w-auto min-h-[50px] px-7 py-3.5 rounded-2xl font-bold text-base transition flex items-center justify-center gap-2 bg-slate-200 text-slate-400 cursor-not-allowed">
+                            <span>Agree & Start Uploading Screenshots</span>
+                            <i class="ph-bold ph-arrow-right text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- PAGE 2: MOBILE-FIRST UPLOAD, OCR & SMART NOTE ANNOTATION            -->
+        <!-- =================================================================== -->
+        <div id="view-workspace" class="hidden space-y-4 sm:space-y-6">
+            
+            <!-- Top Upload & Progress Tracker Bar -->
+            <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-xs">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200/60">
+                                On-Device Screenshot OCR
+                            </span>
+                            <span class="text-xs text-slate-500 font-medium">Participant ID: <strong id="activeParticipantDisplay" class="text-slate-800">P-2026-089</strong></span>
+                        </div>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-800 mt-1">Upload Transaction Screenshots & Add Smart Notes</h2>
+                    </div>
+
+                    <!-- Touch-Friendly Action Buttons (No Sample Loader - Real Uploads Only) -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <label for="multiScreenshotInput" class="flex-1 sm:flex-initial cursor-pointer min-h-[46px] bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-upload-simple text-lg"></i>
+                            <span>Upload Screenshot(s)</span>
+                            <input id="multiScreenshotInput" type="file" accept="image/*" multiple class="hidden" onchange="handleMultipleScreenshotsUpload(event)">
+                        </label>
+
+                        <button type="button" onclick="clearAllBatchQueue()" id="clearAllQueueBtn" class="min-h-[46px] bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-700 font-semibold text-xs px-3.5 py-2.5 rounded-xl border border-rose-200 transition flex items-center justify-center gap-1.5">
+                            <i class="ph-bold ph-trash text-base"></i>
+                            <span>Clear All</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Explicit external OCR processing disclosure (separate from research consent). -->
+                <label class="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl p-3.5 mt-4 text-xs sm:text-sm text-amber-950 leading-relaxed">
+                    <input type="checkbox" id="geminiImageConsent" class="mt-0.5 w-5 h-5 flex-shrink-0 accent-blue-600">
+                    <span>I understand that uploading a screenshot sends the image to <strong>Google Gemini</strong> for OCR through a server proxy. I will use <strong>synthetic or redacted screenshots only</strong> until the study's data-handling and consent procedures are approved.</span>
+                </label>
+
+                <!-- Live OCR Progress Box -->
+                <div id="batchOcrProgressBox" class="hidden mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-3.5 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <i class="ph-bold ph-spinner animate-spin text-blue-600 text-2xl flex-shrink-0"></i>
+                        <div class="min-w-0">
+                            <div id="batchOcrStatusText" class="text-xs sm:text-sm font-bold text-slate-800 truncate">Reading screenshot on this device...</div>
+                            <div class="text-[11px] text-slate-600 truncate">Processing locally; you must review every extracted field</div>
+                        </div>
+                    </div>
+                    <span id="batchOcrCounter" class="text-xs font-extrabold bg-blue-600 text-white px-2.5 py-1 rounded-lg flex-shrink-0">0 / 0</span>
+                </div>
+
+                <p id="localOcrError" role="alert" aria-live="assertive" class="hidden mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"></p>
+
+                <!-- Horizontal Touch-Scrolling Queue Bar with Clear Status Indicators -->
+                <div id="batchQueueWrapper" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
+                    <!-- Clear Progress & Submit Banner -->
+                    <div id="queueStatusBanner" class="bg-slate-50 border border-slate-200 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div id="queueStatusIconBox" class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                                <i class="ph-bold ph-pencil-line"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs sm:text-sm font-bold text-slate-800">
+                                    Progress: <span id="queueCompletedCount" class="text-blue-600">0</span> of <span id="queueTotalCount">0</span> Screenshots Have a Smart Note
+                                </div>
+                                <p id="queueHelperSubtext" class="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                                    Your notes auto-save as you type. Fill in each screenshot, then click <strong>Submit All to Study</strong>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="submitCompletedBatchToDatabase()" id="submitAllBatchBtn"
+                            class="min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl shadow-xs transition flex items-center justify-center gap-2 flex-shrink-0">
+                            <i class="ph-bold ph-cloud-arrow-up text-lg"></i>
+                            <span id="topSubmitBtnLabel">Submit All to Study</span>
+                        </button>
+                    </div>
+
+                    <!-- Horizontal swipeable flex on mobile, 5-col grid on desktop -->
+                    <div id="batchQueueContainer" class="flex lg:grid lg:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1 snap-x">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBMISSION COMPLETE CONFIRMATION CARD (Shown right after participant submits) -->
+            <div id="submissionSuccessState" class="hidden bg-white rounded-3xl p-6 sm:p-10 text-center border-2 border-emerald-200 max-w-2xl mx-auto my-4 shadow-sm space-y-4">
+                <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
+                    <i class="ph-fill ph-check-circle text-4xl"></i>
+                </div>
+                <div class="space-y-1.5">
+                    <span class="inline-block text-[11px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">
+                        Submission Complete
+                    </span>
+                    <h3 id="submissionSuccessTitle" class="text-xl sm:text-2xl font-extrabold text-slate-900">Thank You! Your Smart Notes Have Been Submitted</h3>
+                    <p id="submissionSuccessDesc" class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                        Your annotated transaction records have been saved to the research dataset. You may now close this page or upload additional screenshots below.
+                    </p>
+                </div>
+                <div class="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <label for="multiScreenshotInput" class="w-full sm:w-auto cursor-pointer min-h-[48px] bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-sm transition flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-plus-circle text-lg"></i>
+                        <span>Upload More Screenshots</span>
+                    </label>
+                    <button type="button" onclick="switchMainView('guide')" class="w-full sm:w-auto min-h-[48px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm px-5 py-3 rounded-2xl transition">
+                        Back to Study Guide
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty Queue Dropzone State (Clean - No Sample Button) -->
+            <div id="emptyQueueState" class="bg-white rounded-3xl p-6 sm:p-12 text-center border-2 border-dashed border-blue-300/80 max-w-3xl mx-auto my-2 shadow-xs">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3.5 border border-blue-100">
+                    <i class="ph-duotone ph-scan text-3xl sm:text-4xl"></i>
+                </div>
+                <h3 class="text-base sm:text-xl font-extrabold text-slate-800">Upload Your Transaction Screenshots</h3>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-lg mx-auto leading-relaxed">
+                    Tap the button below to select one or more eWallet or bank transaction screenshots from your phone gallery. OCR runs on your device. Check the result and correct any missing or inaccurate fields.
+                </p>
+                <div class="mt-5 flex items-center justify-center">
+                    <label for="multiScreenshotInput" class="cursor-pointer min-h-[50px] bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm sm:text-base px-7 py-3.5 rounded-2xl shadow-sm transition flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-upload-simple text-xl"></i>
+                        <span>Select Screenshot(s) from Phone / Device</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Active Screenshot Annotation Split View -->
+            <div id="activeAnnotationWorkspace" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+                
+                <!-- MOBILE-ONLY COMPACT OCR SUMMARY CARD -->
+                <div class="lg:hidden bg-white rounded-3xl border border-slate-200/90 p-4 shadow-xs space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <span id="mobileQueueBadge" class="text-xs bg-blue-600 text-white px-2.5 py-0.5 rounded-md font-bold">1 / 1</span>
+                            <span id="mobileOcrStatusBadge" class="text-[11px] bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-md font-semibold">Needs Review</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="rerunOcrOnCurrent()" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold flex items-center gap-1">
+                                <i class="ph-bold ph-arrows-clockwise"></i> OCR
+                            </button>
+                            <button type="button" onclick="toggleEditReceiptModal()" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1">
+                                <i class="ph-bold ph-pencil-simple"></i> Edit
+                            </button>
+                            <button type="button" onclick="removeCurrentFromQueue()" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold flex items-center gap-1">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Compact Row: Thumbnail (Tap to Expand) + Extracted Key Figures -->
+                    <div class="flex items-center gap-3.5 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+                        <div id="mobileThumbWrapper" onclick="openFullscreenImageModal()" class="hidden relative w-16 h-20 rounded-xl overflow-hidden bg-slate-900 border border-slate-300 flex-shrink-0 cursor-pointer">
+                            <img id="mobileThumbImg" src="" alt="Screenshot" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/35 flex items-center justify-center text-white">
+                                <i class="ph-bold ph-magnifying-glass-plus text-lg"></i>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-baseline justify-between gap-2">
+                                <span id="mobileSummaryAmount" class="text-xl font-extrabold text-blue-600">Not detected</span>
+                                <span id="mobileSummaryType" class="text-[11px] font-bold text-slate-500 uppercase">Payment</span>
+                            </div>
+                            <div id="mobileSummaryCounterparty" class="text-sm font-bold text-slate-800 truncate mt-0.5">MERCHANT</div>
+                            <div id="mobileSummaryDetails" class="text-xs text-slate-500 truncate">Details: -</div>
+                            <div id="mobileSummaryDate" class="text-[11px] text-slate-400 mt-0.5">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Full Statement Details Drawer on Mobile -->
+                    <button type="button" onclick="toggleMobileFullReceiptDrawer()" class="w-full py-2 text-xs font-semibold text-blue-700 hover:text-blue-900 flex items-center justify-center gap-1 bg-blue-50/70 rounded-xl">
+                        <span id="mobileDrawerToggleText">Tap to View Full Extracted Statement Details</span>
+                        <i id="mobileDrawerToggleIcon" class="ph-bold ph-caret-down"></i>
+                    </button>
+                </div>
+
+                <!-- LEFT COLUMN: Full Statement Receipt Preview -->
+                <div id="fullReceiptColumnWrapper" class="hidden lg:flex lg:col-span-5 flex-col items-center">
+                    <div class="w-full max-w-md bg-white rounded-3xl overflow-hidden border border-slate-200 receipt-card-shadow">
+                        
+                        <!-- Top Card Control Header -->
+                        <div class="bg-blue-600 text-white px-4 py-3.5 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span id="activeQueuePositionBadge" class="text-xs bg-black/20 px-2.5 py-0.5 rounded-md font-bold">1 / 1</span>
+                                <span id="ocrConfidenceBadge" class="text-[11px] bg-white/20 text-white px-2 py-0.5 rounded-md font-semibold">
+                                    OCR Extracted
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" id="rerunOcrBtn" onclick="rerunOcrOnCurrent()" class="text-xs bg-white/15 hover:bg-white/25 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 font-semibold" title="Retry Gemini OCR on this image">
+                                    <i class="ph-bold ph-arrows-clockwise"></i>
+                                    <span>Re-run OCR</span>
+                                </button>
+                                <button type="button" onclick="toggleEditReceiptModal()" class="text-xs bg-white/15 hover:bg-white/25 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1" title="Manually Edit Extracted OCR Fields">
+                                    <i class="ph-bold ph-pencil-simple"></i>
+                                    <span>Review</span>
+                                </button>
+                                <button type="button" onclick="removeCurrentFromQueue()" class="text-xs bg-rose-500 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 font-semibold" title="Remove This Screenshot">
+                                    <i class="ph-bold ph-trash"></i>
+                                    <span>Remove</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Raw Uploaded Image Preview (Tap to Expand Fullscreen) -->
+                        <div id="uploadedImageContainer" onclick="openFullscreenImageModal()" class="hidden bg-slate-950 relative border-b border-slate-200 p-3 cursor-pointer group">
+                            <img id="uploadedImagePreview" src="" alt="Uploaded Transaction Screenshot" class="max-h-56 w-auto mx-auto object-contain rounded-lg border border-slate-800">
+                            <span class="absolute top-4 left-4 bg-black/75 text-white text-[10px] font-semibold px-2.5 py-1 rounded-md backdrop-blur-xs flex items-center gap-1">
+                                <i class="ph-fill ph-magnifying-glass-plus text-blue-400"></i> Tap to Enlarge
+                            </span>
+                        </div>
+
+                        <!-- Extracted Statement Receipt Body -->
+                        <div class="p-5 sm:p-6 bg-white">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Extracted Fields — Please Verify</span>
+                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <i class="ph-fill ph-shield-check"></i> Manual Privacy Review Required
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                                <div id="receiptAmount" class="text-3xl sm:text-4xl font-bold text-blue-600 tracking-tight">
+                                    -RM0.00
+                                </div>
+                                <div id="receiptPointsBadge" class="hidden bg-blue-50 text-blue-700 border border-blue-200/60 text-xs font-semibold px-3 py-1.5 rounded-lg">
+                                    +0 points
+                                </div>
+                            </div>
+
+                            <div id="receiptRowsContainer" class="divide-y divide-slate-200 text-sm">
+                                <!-- Populated dynamically -->
+                            </div>
+
+                            <div id="receiptFooter" class="mt-4 pt-2 flex flex-col items-center justify-center">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: SMART NOTE & SPENDING CATEGORY FORM (Clear Auto-Save & Next/Submit Flow) -->
+                <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-8 receipt-card-shadow">
+                    
+                    <!-- Header & Live Saved Status Badge -->
+                    <div class="flex items-center justify-between gap-2 pb-4 border-b border-slate-100">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span id="annotationStatusBadge" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
+                                    Step 1 of 1: Needs Smart Note
+                                </span>
+                                <span id="autoSaveIndicator" class="hidden text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
+                                    <i class="ph-fill ph-check-circle"></i> Saved in Queue
+                                </span>
+                            </div>
+                            <h2 class="text-base sm:text-xl font-bold text-slate-800 mt-1.5">Categorize & Add Your Smart Note</h2>
+                        </div>
+
+                        <!-- Prev / Next Screenshot Switcher -->
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="navigateBatch(-1)" id="prevBatchBtn" class="min-h-[42px] px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 active:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center gap-1 disabled:opacity-40">
+                                <i class="ph-bold ph-caret-left"></i> Prev
+                            </button>
+                            <button type="button" onclick="navigateBatch(1)" id="nextBatchBtn" class="min-h-[42px] px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 active:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center gap-1 disabled:opacity-40">
+                                Next <i class="ph-bold ph-caret-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ambiguity Comparison Callout -->
+                    <div class="my-4 bg-blue-50/50 border border-blue-200/80 rounded-2xl p-3.5 sm:p-4 space-y-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1">
+                                <i class="ph-fill ph-magnifying-glass text-blue-600"></i> Statement Summary
+                            </span>
+                        </div>
+                        <div class="text-xs text-slate-700 leading-relaxed">
+                            <p id="smartPromptTitle" class="font-bold text-slate-900">Raw OCR Statement: -</p>
+                            <p id="smartPromptQuestion" class="mt-0.5 text-slate-600">
+                                Choose the <strong>Spending Category</strong> and write a short <strong>Smart Note</strong> describing what this transaction was actually for.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Streamlined 2-Field Form -->
+                    <form id="smartNoteForm" onsubmit="handlePrimaryFormAction(event)" class="space-y-5">
+                        
+                        <!-- 1. Spending Category (Renamed from True Ground-Truth Category) -->
+                        <div>
+                            <label for="smartCategory" class="block text-sm font-bold text-slate-800 mb-1">
+                                1. Spending Category <span class="text-rose-500">*</span>
+                            </label>
+                            <p class="text-xs text-slate-500 mb-2">Which category best fits this transaction?</p>
+                            <select id="smartCategory" required onchange="onFieldInputChange()" class="w-full min-h-[50px] rounded-2xl border border-slate-300 bg-white px-4 py-3 text-base font-medium text-slate-800 focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 outline-none transition">
+                                <option value="">Select only if separately requested by approved protocol</option>
+                                <option value="Food & Dining">🍜 Food & Dining (Meals, Drinks, Split Restaurant Bill)</option>
+                                <option value="Groceries & Daily Essentials">🛒 Groceries & Supermarket Essentials</option>
+                                <option value="Online Shopping (General)">🛍️ Online Shopping (Clothes, Gadgets, Home Items)</option>
+                                <option value="Transport, Parking & Fuel">🚗 Transport, Ride-Hailing, Parking & Toll</option>
+                                <option value="Bills, Utilities & Telco">⚡ Bills, Utilities & Mobile/Internet</option>
+                                <option value="Entertainment & Subscriptions">🎬 Entertainment, Movies, Games & Subscriptions</option>
+                                <option value="Travel & Accommodation">✈️ Travel, Hotel / Homestay & Holiday</option>
+                                <option value="Healthcare & Personal Care">💊 Healthcare, Pharmacy & Personal Care</option>
+                                <option value="Education & Office Supplies">📚 Education, Books & Work/Study Supplies</option>
+                                <option value="Peer-to-Peer / Gift / Loan">🤝 Personal Transfer, Gift or Loan Repayment</option>
+                                <option value="Refund & Order Reversal">↩️ Refund / Cancelled Order Reversal</option>
+                                <option value="Cashback & Rewards">🎁 Cashback & Promotional Reward</option>
+                                <option value="Other">📌 Other</option>
+                            </select>
+                        </div>
+
+                        <!-- 2. Real User Smart Note Textarea -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label for="smartNoteText" class="block text-sm font-bold text-slate-800">
+                                    2. Your Smart Note <span class="text-rose-500">*</span>
+                                </label>
+                                <span id="smartNoteCharCount" class="text-xs font-medium text-slate-400">0 chars (0 words)</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-2">
+                                Briefly describe what you bought, paid for, or why you transferred this amount (e.g., <em>"Split bill for Japanese ramen dinner with friend"</em>).
+                            </p>
+                            <textarea id="smartNoteText" rows="3" required
+                                oninput="onFieldInputChange()"
+                                placeholder="Type your Smart Note here..."
+                                class="w-full rounded-2xl border border-slate-300 focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 p-4 text-base text-slate-800 placeholder-slate-400 transition outline-none leading-relaxed"></textarea>
+                        </div>
+
+                        <!-- Clear Step-by-Step Desktop Action Area (Eliminates Save vs Finish Confusion!) -->
+                        <div class="hidden sm:flex flex-col pt-3 border-t border-slate-100 gap-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <!-- Button 1: Next Screenshot (shown when there are more screenshots in the queue) -->
+                                <button type="button" id="desktopNextScreenshotBtn" onclick="saveAndGoToNextScreenshot()" class="flex-1 min-h-[50px] bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-sm transition flex items-center justify-center gap-2">
+                                    <span>Save & Next Screenshot</span>
+                                    <i class="ph-bold ph-arrow-right text-lg"></i>
+                                </button>
+
+                                <!-- Button 2: Final Submit All Button (Always clear what it does) -->
+                                <button type="button" id="desktopFinalSubmitBtn" onclick="submitCompletedBatchToDatabase()" class="flex-1 min-h-[50px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-sm transition flex items-center justify-center gap-2">
+                                    <i class="ph-bold ph-cloud-arrow-up text-lg"></i>
+                                    <span id="desktopFinalSubmitText">Submit All to Study</span>
+                                </button>
+                            </div>
+                            <p id="desktopActionHint" class="text-[11px] text-slate-500 text-center">
+                                Your note is automatically saved as you type. When you finish all uploaded screenshots, click <strong>Submit All to Study</strong>.
+                            </p>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- STICKY BOTTOM THUMB BAR FOR MOBILE SMARTPHONE USERS (Unambiguous Primary Action) -->
+            <div id="mobileStickyActionBar" class="hidden sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3.5 py-2.5 shadow-2xl">
+                <div class="flex items-center gap-2 max-w-lg mx-auto">
+                    <button type="button" onclick="removeCurrentFromQueue()" class="min-h-[48px] px-3.5 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 font-bold text-xs flex items-center justify-center gap-1 flex-shrink-0" title="Remove Screenshot">
+                        <i class="ph-bold ph-trash text-base"></i>
+                    </button>
+                    <!-- Mobile Next Screenshot Button (when not on last screenshot) -->
+                    <button type="button" id="mobileStickyNextBtn" onclick="saveAndGoToNextScreenshot()" class="flex-1 min-h-[48px] bg-blue-600 active:bg-blue-700 text-white font-bold text-sm px-4 rounded-2xl shadow-sm flex items-center justify-center gap-1.5">
+                        <span id="mobileStickyNextText">Next (#2)</span>
+                        <i class="ph-bold ph-arrow-right text-base"></i>
+                    </button>
+                    <!-- Mobile Final Submit Button -->
+                    <button type="button" id="mobileStickySubmitBtn" onclick="submitCompletedBatchToDatabase()" class="flex-1 min-h-[48px] bg-emerald-600 active:bg-emerald-700 text-white font-bold text-sm px-4 rounded-2xl shadow-sm flex items-center justify-center gap-1.5">
+                        <i class="ph-bold ph-cloud-arrow-up text-lg"></i>
+                        <span id="mobileStickySubmitText">Submit All</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- PAGE 3: DEVELOPER / RESEARCHER COLLECTED DATA VIEW (PASSCODE GATED) -->
+        <!-- =================================================================== -->
+        <div id="view-developer" class="hidden space-y-6">
+            
+            <!-- Developer Header & Export Banner -->
+            <div class="bg-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-slate-800">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="bg-blue-500 text-white text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                                <i class="ph-fill ph-lock-key-open"></i> Unlocked Researcher Console
+                            </span>
+                            <span id="cloudSyncStatusBadge" class="text-xs text-blue-400 font-medium flex items-center gap-1">
+                                <i class="ph-fill ph-cloud-check"></i> Dataset Synced (Firestore + Local)
+                            </span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold mt-1.5">Collected Smart Note & Categorization Dataset</h2>
+                        <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+                            Hidden from regular participants. Compare raw OCR statement fields against user-contributed <strong>Smart Notes</strong> and <strong>Spending Categories</strong>.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="exportDeveloperDataset('csv')" class="min-h-[44px] bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+                            <i class="ph-bold ph-file-csv text-lg"></i>
+                            <span>Export CSV</span>
+                        </button>
+                        <button onclick="exportDeveloperDataset('json')" class="min-h-[44px] bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-700 transition flex items-center gap-1.5">
+                            <i class="ph-bold ph-brackets-curly text-base"></i>
+                            <span>Export JSON</span>
+                        </button>
+                        <button onclick="lockDeveloperMode()" class="min-h-[44px] bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5" title="Hide Developer Tab & Return to Participant View">
+                            <i class="ph-bold ph-lock-key"></i>
+                            <span>Lock / Exit Dev Mode</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Developer KPI Summary Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-slate-800">
+                    <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/70">
+                        <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Records</div>
+                        <div id="devStatTotalRecords" class="text-xl sm:text-3xl font-extrabold text-white mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/70">
+                        <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Participants</div>
+                        <div id="devStatParticipants" class="text-xl sm:text-3xl font-extrabold text-blue-400 mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/70">
+                        <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Outflow Volume</div>
+                        <div id="devStatOutflow" class="text-lg sm:text-2xl font-bold text-rose-400 mt-1">-RM0.00</div>
+                    </div>
+                    <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700/70">
+                        <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Inflow Volume</div>
+                        <div id="devStatInflow" class="text-lg sm:text-2xl font-bold text-emerald-400 mt-1">+RM0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Controls -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+                    <div class="relative flex-grow sm:w-64">
+                        <i class="ph ph-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <input id="devSearchInput" type="text" oninput="renderDeveloperTable()" placeholder="Search merchant, smart note, ref..."
+                            class="w-full min-h-[44px] rounded-xl border border-slate-300 pl-9 pr-3.5 py-2 text-base sm:text-sm outline-none focus:border-blue-600">
+                    </div>
+
+                    <select id="devFilterType" onchange="renderDeveloperTable()" class="min-h-[44px] rounded-xl border border-slate-300 bg-white px-3 py-2 text-base sm:text-sm text-slate-700 outline-none focus:border-blue-600">
+                        <option value="ALL">All Transaction Types</option>
+                        <option value="Payment">Payment</option>
+                        <option value="Transfer to Wallet">Transfer to Wallet</option>
+                        <option value="DuitNow Received">DuitNow Received</option>
+                        <option value="Refund">Refund</option>
+                        <option value="Cashback">Cashback</option>
+                    </select>
+
+                    <select id="devFilterCategory" onchange="renderDeveloperTable()" class="min-h-[44px] rounded-xl border border-slate-300 bg-white px-3 py-2 text-base sm:text-sm text-slate-700 outline-none focus:border-blue-600">
+                        <option value="ALL">All Spending Categories</option>
+                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Groceries & Daily Essentials">Groceries & Daily Essentials</option>
+                        <option value="Online Shopping (General)">Online Shopping (General)</option>
+                        <option value="Education & Office Supplies">Education & Office Supplies</option>
+                        <option value="Transport, Parking & Fuel">Transport, Parking & Fuel</option>
+                        <option value="Bills, Utilities & Telco">Bills, Utilities & Telco</option>
+                        <option value="Entertainment & Subscriptions">Entertainment, Movies, Games & Subscriptions</option>
+                        <option value="Travel & Accommodation">Travel & Accommodation</option>
+                        <option value="Peer-to-Peer / Gift / Loan">Peer-to-Peer / Gift / Loan</option>
+                        <option value="Refund & Order Reversal">Refund & Order Reversal</option>
+                        <option value="Cashback & Rewards">Cashback & Rewards</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                    <span id="devShowingCount" class="text-xs text-slate-500 font-medium">Showing 0 records</span>
+                </div>
+            </div>
+
+            <!-- Developer Collected Data Table -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                <th class="py-3.5 px-4">Participant ID</th>
+                                <th class="py-3.5 px-4">Coarse Date / Time-of-Day</th>
+                                <th class="py-3.5 px-4">Raw Statement Type</th>
+                                <th class="py-3.5 px-4">Amount</th>
+                                <th class="py-3.5 px-4">Merchant / Anonymized Peer</th>
+                                <th class="py-3.5 px-4">Sanitized Remarks / Details</th>
+                                <th class="py-3.5 px-4 bg-blue-50/70 text-blue-800">Spending Category</th>
+                                <th class="py-3.5 px-4 bg-emerald-50/70 text-emerald-900">Real User Smart Note</th>
+                                <th class="py-3.5 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="developerTableBody" class="divide-y divide-slate-200 text-xs sm:text-sm">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Subtle Footer with Hidden/Passcode-Protected Researcher Login Trigger -->
+    <footer class="mt-auto border-t border-slate-200/80 bg-white py-4 px-4 text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>Daily Transaction Smart Note & Categorization Research Platform</div>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="openDeveloperLoginModal()" class="text-slate-400 hover:text-slate-600 transition flex items-center gap-1 text-[11px] font-medium py-1 px-2 rounded-lg hover:bg-slate-100">
+                    <i class="ph-bold ph-lock-key"></i>
+                    <span>Researcher Login</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Fullscreen Screenshot Lightbox Modal for Mobile Users -->
+    <div id="fullscreenImageModal" onclick="closeFullscreenImageModal()" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
+        <button type="button" onclick="closeFullscreenImageModal()" class="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/15 text-white flex items-center justify-center text-xl">
+            <i class="ph-bold ph-x"></i>
+        </button>
+        <img id="fullscreenModalImg" src="" alt="Full Receipt Preview" class="max-h-[88vh] max-w-full object-contain rounded-xl">
+    </div>
+
+    <!-- Passcode Modal for Developer / Researcher Access -->
+    <div id="developerPasscodeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
+                        <i class="ph-bold ph-lock-key text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-slate-800">Researcher Console</h3>
+                        <p class="text-xs text-slate-500">Enter developer passcode to view dataset</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeDeveloperLoginModal()" class="w-9 h-9 rounded-xl text-slate-400 hover:text-slate-600 flex items-center justify-center">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="verifyDeveloperPasscode(event)" class="space-y-3.5">
+                <div>
+                    <label for="devPasscodeInput" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Developer Passcode</label>
+                    <input id="devPasscodeInput" type="password" placeholder="Enter passcode..." required
+                        class="w-full min-h-[48px] border border-slate-300 rounded-xl px-4 py-2.5 text-base font-bold text-slate-800 focus:border-blue-600 outline-none">
+                    <p id="devPasscodeError" class="hidden text-xs text-rose-600 font-semibold mt-1.5">Incorrect passcode. Please try again.</p>
+                    <p class="text-[11px] text-slate-400 mt-1.5">Default researcher passcode: <code class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-mono">admin2026</code></p>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeDeveloperLoginModal()" class="min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit" class="min-h-[44px] px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-1.5">
+                        <i class="ph-bold ph-lock-key-open"></i>
+                        <span>Unlock Dataset</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Manually Editing Extracted Receipt Fields (Mobile-Friendly 16px Inputs, Privacy-Safe Fields Only) -->
+    <div id="editReceiptModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4 my-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                    <h3 class="font-bold text-base text-slate-800 flex items-center gap-2">
+                        <i class="ph-fill ph-sliders text-blue-600"></i> Edit Extracted Statement Details
+                    </h3>
+                    <p class="text-[11px] text-emerald-700 font-medium mt-0.5">Wallet Ref, Transaction No. & DuitNow Ref are never recorded.</p>
+                </div>
+                <button type="button" onclick="toggleEditReceiptModal()" class="w-9 h-9 rounded-xl text-slate-400 hover:text-slate-600 flex items-center justify-center">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">Amount (with + or -)</label>
+                    <input id="modalAmount" type="text" class="w-full min-h-[44px] border border-slate-300 rounded-xl px-3 py-2 text-base font-bold text-slate-800">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">Transaction Type</label>
+                    <input id="modalType" type="text" class="w-full min-h-[44px] border border-slate-300 rounded-xl px-3 py-2 text-base text-slate-800">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">Merchant / Anonymized Peer</label>
+                    <input id="modalCounterparty" type="text" class="w-full min-h-[44px] border border-slate-300 rounded-xl px-3 py-2 text-base text-slate-800">
+                </div>
+                <div>
+                    <label class="font-semibold text-slate-600 block mb-1">Coarse Date / Time-of-Day</label>
+                    <input id="modalDateTime" type="text" class="w-full min-h-[44px] border border-slate-300 rounded-xl px-3 py-2 text-base text-slate-800">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="font-semibold text-slate-600 block mb-1">Sanitized Payment Details / Remarks</label>
+                    <input id="modalDetails" type="text" class="w-full min-h-[44px] border border-slate-300 rounded-xl px-3 py-2 text-base text-slate-800">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                <button type="button" onclick="toggleEditReceiptModal()" class="min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                <button type="button" onclick="applyManualReceiptEdits()" class="min-h-[44px] px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700">Confirm Reviewed Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="fixed bottom-20 sm:bottom-5 right-4 left-4 sm:left-auto z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700 max-w-md ml-auto">
+            <i id="toastIcon" class="ph-fill ph-check-circle text-blue-400 text-xl flex-shrink-0"></i>
+            <span id="toastMessage" class="text-xs sm:text-sm font-medium">Action completed!</span>
+        </div>
+    </div>
+
+    <!-- Public Worker URL only: never paste a Gemini API key into HTML or JavaScript. -->
+    <script src="./ocr_config.js"></script>
+    <script src="./tng_ocr_sanitizer.js"></script>
+    <!-- Gemini OCR is run via Cloudflare Worker; server keeps key in a secret. -->
+    <script type="module">
+        // Lazy Firebase load: OCR and study data persistence are distinct systems.
+        let initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged;
+        let getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot;
+
+        // State Variables: Start completely clean (no pre-loaded samples)
+        let hasAcceptedTerms = false;
+        let currentParticipantId = "P-2026-089";
+        let batchQueue = []; 
+        let activeBatchIndex = 0;
+        let developerCollectedData = [];
+        let isDeveloperUnlocked = false;
+        let logoTapCount = 0;
+        let logoTapTimer = null;
+        let isMobileReceiptDrawerOpen = false;
+        let showSubmissionSuccessBanner = false;
+
+        // Firebase References
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tng-smart-note-collector';
+        const FIRESTORE_COLLECTION_NAME = 'smart_note_categorization_dataset_v2';
+
+        async function initFirebasePersistence() {
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const [fbApp, fbAuth, fbDb] = await Promise.all([
+                        import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"),
+                        import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"),
+                        import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js")
+                    ]);
+                    ({initializeApp} = fbApp);
+                    ({getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged} = fbAuth);
+                    ({getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot} = fbDb);
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        currentUser = user;
+                        if (user) {
+                            subscribeToDeveloperCollection();
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn("Running with local in-memory storage fallback.");
+            }
+        }
+
+        function subscribeToDeveloperCollection() {
+            if (!db || !currentUser) return;
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', FIRESTORE_COLLECTION_NAME);
+            onSnapshot(colRef, (snapshot) => {
+                const docs = [];
+                snapshot.forEach(docSnap => docs.push(docSnap.data()));
+                docs.sort((a, b) => (b.submittedAt || "").localeCompare(a.submittedAt || ""));
+                developerCollectedData = docs;
+                updateDeveloperBadgesAndTable();
+            }, (err) => {
+                console.warn("Firestore snapshot fallback:", err);
+            });
+        }
+
+        // ============================================================================
+        // 1B. HIDDEN / PASSCODE-PROTECTED DEVELOPER ACCESS LOGIC
+        // ============================================================================
+        window.handleLogoSecretTap = function() {
+            logoTapCount++;
+            if (logoTapTimer) clearTimeout(logoTapTimer);
+            if (logoTapCount >= 3) {
+                logoTapCount = 0;
+                openDeveloperLoginModal();
+            } else {
+                logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 900);
+            }
+        };
+
+        window.openDeveloperLoginModal = function() {
+            if (isDeveloperUnlocked) {
+                switchMainView("developer");
+                return;
+            }
+            const modal = document.getElementById("developerPasscodeModal");
+            const input = document.getElementById("devPasscodeInput");
+            const err = document.getElementById("devPasscodeError");
+            err.classList.add("hidden");
+            input.value = "";
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            setTimeout(() => input.focus(), 100);
+        };
+
+        window.closeDeveloperLoginModal = function() {
+            const modal = document.getElementById("developerPasscodeModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        };
+
+        window.verifyDeveloperPasscode = function(e) {
+            e.preventDefault();
+            const code = (document.getElementById("devPasscodeInput").value || "").trim();
+            if (code === "admin2026") {
+                unlockDeveloperMode();
+                closeDeveloperLoginModal();
+            } else {
+                document.getElementById("devPasscodeError").classList.remove("hidden");
+            }
+        };
+
+        function unlockDeveloperMode() {
+            isDeveloperUnlocked = true;
+            const devBtn = document.getElementById("navBtn-developer");
+            devBtn.classList.remove("hidden");
+            devBtn.classList.add("flex");
+            switchMainView("developer");
+            showToast("Developer Dataset Unlocked (Admin Mode).");
+        }
+
+        window.lockDeveloperMode = function() {
+            isDeveloperUnlocked = false;
+            const devBtn = document.getElementById("navBtn-developer");
+            devBtn.classList.add("hidden");
+            devBtn.classList.remove("flex");
+            switchMainView("guide");
+            showToast("Locked Developer Dataset. Returned to Participant View.");
+        };
+
+        // ============================================================================
+        // 2. ONBOARDING GUIDE & TERMS AND CONDITIONS LOGIC
+        // ============================================================================
+        window.toggleConsentButton = function() {
+            const checked = document.getElementById("termsCheckbox").checked;
+            const btn = document.getElementById("proceedToUploadBtn");
+            if (checked) {
+                btn.disabled = false;
+                btn.className = "w-full sm:w-auto min-h-[50px] px-7 py-3.5 rounded-2xl font-bold text-base transition flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm cursor-pointer";
+            } else {
+                btn.disabled = true;
+                btn.className = "w-full sm:w-auto min-h-[50px] px-7 py-3.5 rounded-2xl font-bold text-base transition flex items-center justify-center gap-2 bg-slate-200 text-slate-400 cursor-not-allowed";
+            }
+        };
+
+        window.acceptTermsAndProceed = function() {
+            const checkbox = document.getElementById("termsCheckbox");
+            if (!checkbox.checked) {
+                showToast("Please agree to the Terms & Conditions first.");
+                return;
+            }
+            hasAcceptedTerms = true;
+            currentParticipantId = document.getElementById("consentParticipantId").value.trim() || "P-2026-089";
+            document.getElementById("activeParticipantDisplay").textContent = currentParticipantId;
+            switchMainView("workspace");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast("Ready! Upload your transaction screenshots to run AI OCR.");
+        };
+
+        window.attemptEnterWorkspace = function() {
+            if (!hasAcceptedTerms) {
+                showToast("Please read the Participant Guide and tick the Terms & Conditions checkbox first.");
+                switchMainView("guide");
+                return;
+            }
+            switchMainView("workspace");
+        };
+
+        window.switchMainView = function(viewName) {
+            if (viewName === "developer" && !isDeveloperUnlocked) {
+                openDeveloperLoginModal();
+                return;
+            }
+
+            const views = ["guide", "workspace", "developer"];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`navBtn-${v}`);
+                if (!el || !btn) return;
+
+                if (v === viewName) {
+                    el.classList.remove("hidden");
+                    if (v === "developer") {
+                        btn.className = "min-h-[42px] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 text-white shadow-xs transition flex items-center gap-1.5";
+                    } else {
+                        btn.className = "min-h-[42px] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 text-white shadow-xs transition flex items-center gap-1.5";
+                    }
+                } else {
+                    el.classList.add("hidden");
+                    if (v === "developer") {
+                        btn.className = (isDeveloperUnlocked ? "flex " : "hidden ") + "min-h-[42px] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-indigo-800 hover:bg-indigo-100 transition items-center gap-1.5 border border-indigo-300 bg-indigo-50";
+                    } else {
+                        btn.className = "min-h-[42px] px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5";
+                    }
+                }
+            });
+
+            if (viewName === "workspace") {
+                renderBatchWorkspace();
+            } else if (viewName === "developer") {
+                updateDeveloperBadgesAndTable();
+            }
+        };
+
+        // ============================================================================
+        // 3. MULTI-SCREENSHOT BATCH UPLOAD, REMOVE & LIVE GEMINI VISION OCR LOGIC
+        // ============================================================================
+        window.clearAllBatchQueue = function() {
+            if (batchQueue.length === 0) {
+                showToast("The upload queue is already empty.");
+                return;
+            }
+            batchQueue = [];
+            activeBatchIndex = 0;
+            showSubmissionSuccessBanner = false;
+            renderBatchWorkspace();
+            showToast("Cleared all screenshots from queue.");
+        };
+
+        window.removeQueueItemByIndex = function(event, indexToRemove) {
+            if (event) event.stopPropagation();
+            syncDraftToActiveTransaction();
+            if (indexToRemove < 0 || indexToRemove >= batchQueue.length) return;
+
+            const removedItem = batchQueue[indexToRemove];
+            batchQueue.splice(indexToRemove, 1);
+
+            if (activeBatchIndex >= batchQueue.length) {
+                activeBatchIndex = Math.max(0, batchQueue.length - 1);
+            }
+            renderBatchWorkspace();
+            showToast(`Removed "${removedItem.counterparty || removedItem.transactionType}" from queue.`);
+        };
+
+        // Gemini OCR: secret stays on the Cloudflare Worker, NEVER in this public file.
+        const OCR_MAX_FILES = 10;
+        const OCR_MAX_FILE_BYTES = 5 * 1024 * 1024;
+        const OCR_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+        function localOcrMessage(message) {
+            const node = document.getElementById("localOcrError");
+            if (!node) return;
+            node.textContent = message || "";
+            node.classList.toggle("hidden", !message);
+        }
+
+        async function readFileAsDataURL(file) {
+            return new Promise((resolve,reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Cannot open screenshot'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function getGeminiEndpoint() {
+            const endpoint = String(window.GEMINI_OCR_ENDPOINT || '').trim();
+            if (!/^https:\/\/[^/]+\/ocr(?:\?.*)?$/.test(endpoint) || endpoint.includes('REPLACE-')) {
+                throw new Error('Gemini OCR endpoint is not configured. Deploy the Worker and update ocr_config.js.');
+            }
+            return endpoint;
+        }
+
+        async function extractReceiptWithGemini(file) {
+            const endpoint = getGeminiEndpoint();
+            const previewDataUrl = await readFileAsDataURL(file);
+            const imageBase64 = previewDataUrl.slice(previewDataUrl.indexOf(',') + 1);
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-store',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({mimeType:file.type, imageBase64}),
+                signal: AbortSignal.timeout(40000),
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(payload.error || `Gemini OCR HTTP ${response.status}`);
+            // The Worker sanitises structured fields; participant review remains mandatory.
+            return payload;
+        }
+
+        function emptyManualCandidate() {
+            return {
+                amount:'', transactionType:'', counterpartyLabel:'Merchant', counterparty:'',
+                detailsLabel:'Payment Details / Remarks', detailsValue:'', paymentMethod:'',
+                dateTime:'', status:'', warnings:['Gemini OCR unavailable — enter details manually'],
+                ocrSource:'Gemini OCR failed — manual review required',
+            };
+        }
+
+        window.handleMultipleScreenshotsUpload = async function(event) {
+            const picker = event.target;
+            const files = Array.from(picker.files || []);
+            if (!files.length) return;
+            localOcrMessage('');
+            if (!document.getElementById('geminiImageConsent')?.checked) {
+                localOcrMessage('Read and confirm the Google Gemini image-processing notice before uploading.');
+                picker.value = '';
+                return;
+            }
+            if (files.length > OCR_MAX_FILES) {
+                localOcrMessage(`Choose no more than ${OCR_MAX_FILES} images at once.`);
+                picker.value = '';
+                return;
+            }
+            const accepted = [...OCR_MIMES];
+            const bad = files.find(f => !accepted.includes(f.type) || f.size > OCR_MAX_FILE_BYTES);
+            if (bad) {
+                localOcrMessage(`Cannot process ${bad.name}: select PNG/JPEG/WebP under 5 MB.`);
+                picker.value = '';
+                return;
+            }
+            showSubmissionSuccessBanner = false;
+            syncDraftToActiveTransaction();
+            const progressBox = document.getElementById('batchOcrProgressBox');
+            const counterEl = document.getElementById('batchOcrCounter');
+            const statusText = document.getElementById('batchOcrStatusText');
+            progressBox.classList.remove('hidden');
+            picker.disabled = true;
+            let successes = 0;
+            let failures = 0;
+            const failureMessages = [];
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const f = files[i];
+                    statusText.textContent = `Reading screenshot ${i + 1} of ${files.length} with Gemini…`;
+                    counterEl.textContent = `${i + 1} / ${files.length}`;
+                    let extracted;
+                    try {
+                        extracted = await extractReceiptWithGemini(f);
+                        successes++;
+                    } catch (error) {
+                        failures++;
+                        failureMessages.push(error.message || "Gemini request failed");
+                        console.warn('Gemini OCR could not process screenshot:', error.message);
+                        extracted = emptyManualCandidate();
+                    }
+                    const previewUrl = await readFileAsDataURL(f);
+                    const candidate = {
+                        id: (crypto.randomUUID ? crypto.randomUUID() : `OCR-${Date.now()}-${i}`),
+                        participantId: currentParticipantId,
+                        amount: extracted.amount || '',
+                        transactionType: extracted.transactionType || '',
+                        counterpartyLabel: extracted.counterpartyLabel || 'Merchant',
+                        counterparty: extracted.counterparty || '',
+                        detailsLabel: extracted.detailsLabel || 'Payment Details / Remarks',
+                        detailsValue: extracted.detailsValue || '',
+                        paymentMethod: extracted.paymentMethod || '',
+                        dateTime: extracted.dateTime || '',
+                        status: extracted.status || '',
+                        pointsBadge: null,
+                        footerType: 'none',
+                        category: '',  // OCR never predicts a research category.
+                        smartNote: '',
+                        reviewed: false, // Participant MUST confirm extraction first.
+                        reviewWarnings: extracted.warnings || [],
+                        rawImageUrl: previewUrl, // local preview only, NEVER exported.
+                        rawMimeType: f.type,
+                        rawFileName: f.name,
+                        ocrStatus: extracted.ocrSource || 'Needs review',
+                        submittedAt: null,
+                    };
+                    batchQueue.push(candidate);
+                    activeBatchIndex = batchQueue.length - 1;
+                    renderBatchWorkspace();
+                }
+                if (failures) {
+                    localOcrMessage(`${failures} screenshot(s) could not be read. ${failureMessages[0] || ""} Details are blank. Tap Review and enter actual values.`);
+                }
+                showToast(`Gemini read ${successes}/${files.length} screenshot(s). Verify every transaction.`);
+            } finally {
+                picker.disabled = false;
+                picker.value = '';
+                progressBox.classList.add('hidden');
+                renderBatchWorkspace();
+            }
+        };
+
+        window.rerunOcrOnCurrent = async function() {
+            const tx = batchQueue[activeBatchIndex];
+            if (!tx || !tx.rawImageUrl) return;
+            localOcrMessage('');
+            if (!document.getElementById('geminiImageConsent')?.checked) {
+                localOcrMessage('Confirm the Gemini image-processing notice before retrying OCR.');
+                return;
+            }
+            const progressBox = document.getElementById('batchOcrProgressBox');
+            progressBox.classList.remove('hidden');
+            try {
+                const response = await fetch(tx.rawImageUrl);
+                const blob = await response.blob();
+                const extracted = await extractReceiptWithGemini(new File([blob], "retry.png", {type: tx.rawMimeType || "image/png"}));
+                for (const key of ['amount','transactionType','counterpartyLabel','counterparty','detailsLabel','detailsValue','paymentMethod','dateTime','status']) {
+                    tx[key] = extracted[key] || '';
+                }
+                tx.reviewWarnings = extracted.warnings || [];
+                tx.ocrStatus = extracted.ocrSource;
+                tx.reviewed = false;
+                renderBatchWorkspace();
+                showToast('Gemini OCR finished. Tap Review to verify all extracted details.');
+            } catch (error) {
+                localOcrMessage(`Gemini OCR failed: ${error.message || 'Please enter details manually.'}`);
+            } finally {
+                progressBox.classList.add('hidden');
+            }
+        };
+
+        // ============================================================================
+        // 4. RENDER BATCH QUEUE & ACTIVE RECEIPT + CLEAR SAVE/SUBMIT WORKFLOW
+        // ============================================================================
+        function renderBatchWorkspace() {
+            const total = batchQueue.length;
+            const completed = batchQueue.filter(item => item.reviewed && item.smartNote && item.smartNote.trim().length > 0).length;
+
+            document.getElementById("batchQueueBadge").textContent = total;
+            document.getElementById("queueTotalCount").textContent = total;
+            document.getElementById("queueCompletedCount").textContent = completed;
+
+            const emptyState = document.getElementById("emptyQueueState");
+            const successState = document.getElementById("submissionSuccessState");
+            const activeWorkspace = document.getElementById("activeAnnotationWorkspace");
+            const queueWrapper = document.getElementById("batchQueueWrapper");
+            const queueContainer = document.getElementById("batchQueueContainer");
+            const mobileStickyBar = document.getElementById("mobileStickyActionBar");
+
+            if (total === 0) {
+                activeWorkspace.classList.add("hidden");
+                queueWrapper.classList.add("hidden");
+                if (mobileStickyBar) mobileStickyBar.classList.add("hidden");
+                queueContainer.innerHTML = "";
+
+                if (showSubmissionSuccessBanner) {
+                    successState.classList.remove("hidden");
+                    emptyState.classList.add("hidden");
+                } else {
+                    successState.classList.add("hidden");
+                    emptyState.classList.remove("hidden");
+                }
+                return;
+            }
+
+            successState.classList.add("hidden");
+            emptyState.classList.add("hidden");
+            activeWorkspace.classList.remove("hidden");
+            queueWrapper.classList.remove("hidden");
+            if (mobileStickyBar) mobileStickyBar.classList.remove("hidden");
+
+            if (activeBatchIndex >= total) activeBatchIndex = total - 1;
+            if (activeBatchIndex < 0) activeBatchIndex = 0;
+
+            updateQueueProgressBanner(completed, total);
+
+            // Render Horizontal Touch-Scroll Queue Cards
+            queueContainer.innerHTML = batchQueue.map((tx, idx) => {
+                const isSelected = idx === activeBatchIndex;
+                const hasNote = tx.reviewed && tx.smartNote && tx.smartNote.trim().length > 0;
+                const isPos = (tx.amount || "").startsWith("+");
+
+                return `
+                    <div onclick="selectBatchIndex(${idx})"
+                        class="snap-start flex-shrink-0 w-44 sm:w-48 lg:w-auto cursor-pointer relative text-left p-3 rounded-2xl border transition-all flex flex-col justify-between ${
+                            isSelected 
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-600/25' 
+                            : 'bg-slate-50 hover:bg-blue-50/50 text-slate-800 border-slate-200'
+                        }">
+                        <div class="flex items-center justify-between w-full gap-1 pr-6">
+                            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md truncate ${
+                                isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
+                            }">#${idx + 1}</span>
+                            ${hasNote 
+                                ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500 text-white flex items-center gap-1"><i class="ph-bold ph-check"></i> Ready</span>`
+                                : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400 text-slate-950">Needs Review/Note</span>`
+                            }
+                        </div>
+                        <button type="button" onclick="removeQueueItemByIndex(event, ${idx})" title="Remove this screenshot"
+                            class="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs transition ${
+                                isSelected ? 'bg-white/20 hover:bg-rose-500 text-white' : 'bg-slate-200/90 hover:bg-rose-500 hover:text-white text-slate-600'
+                            }">
+                            <i class="ph-bold ph-x"></i>
+                        </button>
+                        <div class="mt-2 font-bold text-xs truncate">${escapeHtml(tx.counterparty || tx.detailsValue || 'Receipt')}</div>
+                        <div class="flex items-center justify-between mt-1">
+                            <span class="text-xs font-extrabold ${isSelected ? 'text-blue-50' : (isPos ? 'text-emerald-600' : 'text-blue-600')}">${escapeHtml(tx.amount)}</span>
+                            <span class="text-[10px] opacity-75 truncate max-w-[85px]">${escapeHtml(tx.category)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            const activeTx = batchQueue[activeBatchIndex];
+            renderTNGReceiptCard(activeTx, activeBatchIndex, total);
+            populateStreamlinedForm(activeTx, activeBatchIndex, total, completed);
+        }
+
+        function updateQueueProgressBanner(completed, total) {
+            const banner = document.getElementById("queueStatusBanner");
+            const iconBox = document.getElementById("queueStatusIconBox");
+            const subtext = document.getElementById("queueHelperSubtext");
+            const topSubmitLabel = document.getElementById("topSubmitBtnLabel");
+
+            if (completed === total && total > 0) {
+                banner.className = "bg-emerald-50/90 border border-emerald-200 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+                iconBox.className = "w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0";
+                iconBox.innerHTML = `<i class="ph-bold ph-check-circle"></i>`;
+                subtext.innerHTML = `All <strong>${total}</strong> screenshot(s) have a Smart Note! Click <strong>Submit All (${total}) to Study</strong> to finish.`;
+                if (topSubmitLabel) topSubmitLabel.textContent = `Submit All (${total}) to Study`;
+            } else {
+                banner.className = "bg-slate-50 border border-slate-200 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
+                iconBox.className = "w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg flex-shrink-0";
+                iconBox.innerHTML = `<i class="ph-bold ph-pencil-line"></i>`;
+                subtext.innerHTML = `Your notes auto-save as you type (${completed}/${total} ready). Fill in each screenshot, then click <strong>Submit All to Study</strong>.`;
+                if (topSubmitLabel) topSubmitLabel.textContent = completed > 0 ? `Submit Ready (${completed}/${total})` : `Submit All to Study`;
+            }
+        }
+
+        window.toggleMobileFullReceiptDrawer = function() {
+            isMobileReceiptDrawerOpen = !isMobileReceiptDrawerOpen;
+            const col = document.getElementById("fullReceiptColumnWrapper");
+            const txt = document.getElementById("mobileDrawerToggleText");
+            const icon = document.getElementById("mobileDrawerToggleIcon");
+            if (isMobileReceiptDrawerOpen) {
+                col.classList.remove("hidden");
+                col.classList.add("flex");
+                txt.textContent = "Hide Full Extracted Statement Details";
+                icon.className = "ph-bold ph-caret-up";
+            } else {
+                col.classList.add("hidden");
+                col.classList.remove("flex");
+                txt.textContent = "Tap to View Full Extracted Statement Details";
+                icon.className = "ph-bold ph-caret-down";
+            }
+        };
+
+        window.openFullscreenImageModal = function() {
+            const activeTx = batchQueue[activeBatchIndex];
+            if (!activeTx || !activeTx.rawImageUrl) return;
+            const modal = document.getElementById("fullscreenImageModal");
+            document.getElementById("fullscreenModalImg").src = activeTx.rawImageUrl;
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        };
+
+        window.closeFullscreenImageModal = function() {
+            const modal = document.getElementById("fullscreenImageModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        };
+
+        window.selectBatchIndex = function(idx) {
+            syncDraftToActiveTransaction();
+            activeBatchIndex = idx;
+            renderBatchWorkspace();
+        };
+
+        window.navigateBatch = function(direction) {
+            syncDraftToActiveTransaction();
+            const nextIdx = activeBatchIndex + direction;
+            if (nextIdx >= 0 && nextIdx < batchQueue.length) {
+                activeBatchIndex = nextIdx;
+                renderBatchWorkspace();
+            }
+        };
+
+        window.syncDraftToActiveTransaction = function() {
+            if (batchQueue[activeBatchIndex]) {
+                const catEl = document.getElementById("smartCategory");
+                const noteEl = document.getElementById("smartNoteText");
+                if (catEl) batchQueue[activeBatchIndex].category = catEl.value;
+                if (noteEl) batchQueue[activeBatchIndex].smartNote = noteEl.value.trim();
+            }
+        };
+
+        // Live input handler that auto-saves to queue and updates badges immediately without confusion
+        window.onFieldInputChange = function() {
+            syncDraftToActiveTransaction();
+            updateCharCounter();
+            const total = batchQueue.length;
+            const completed = batchQueue.filter(item => item.reviewed && item.smartNote && item.smartNote.trim().length > 0).length;
+            const activeTx = batchQueue[activeBatchIndex];
+
+            document.getElementById("queueCompletedCount").textContent = completed;
+            updateQueueProgressBanner(completed, total);
+            if (activeTx) {
+                updateLiveSaveStatusUI(activeTx, activeBatchIndex, total, completed);
+            }
+        };
+
+        function updateLiveSaveStatusUI(tx, idx, total, completed) {
+            const hasNote = tx.reviewed && tx.smartNote && tx.smartNote.trim().length > 0;
+            const statusBadge = document.getElementById("annotationStatusBadge");
+            const autoSaveInd = document.getElementById("autoSaveIndicator");
+
+            if (hasNote) {
+                statusBadge.className = "text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200";
+                statusBadge.innerHTML = `<i class="ph-bold ph-check"></i> Screenshot #${idx + 1} of ${total}: Ready`;
+                if (autoSaveInd) autoSaveInd.classList.remove("hidden");
+            } else {
+                statusBadge.className = "text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200";
+                statusBadge.textContent = `Screenshot #${idx + 1} of ${total}: ${!tx.reviewed ? 'Review Details' : 'Needs Smart Note'}`;
+                if (autoSaveInd) autoSaveInd.classList.add("hidden");
+            }
+
+            // Configure Desktop & Mobile Action Buttons clearly so user never wonders if they saved or finished
+            const desktopNextBtn = document.getElementById("desktopNextScreenshotBtn");
+            const desktopSubmitText = document.getElementById("desktopFinalSubmitText");
+            const mobileNextBtn = document.getElementById("mobileStickyNextBtn");
+            const mobileNextText = document.getElementById("mobileStickyNextText");
+            const mobileSubmitText = document.getElementById("mobileStickySubmitText");
+
+            const hasNext = idx < total - 1;
+            if (hasNext) {
+                if (desktopNextBtn) {
+                    desktopNextBtn.classList.remove("hidden");
+                    desktopNextBtn.classList.add("flex");
+                    desktopNextBtn.innerHTML = `<span>Next Screenshot (#${idx + 2} of ${total})</span> <i class="ph-bold ph-arrow-right text-lg"></i>`;
+                }
+                if (mobileNextBtn) {
+                    mobileNextBtn.classList.remove("hidden");
+                    mobileNextBtn.classList.add("flex");
+                    if (mobileNextText) mobileNextText.textContent = `Next (#${idx + 2})`;
+                }
+            } else {
+                if (desktopNextBtn) {
+                    desktopNextBtn.classList.add("hidden");
+                    desktopNextBtn.classList.remove("flex");
+                }
+                if (mobileNextBtn) {
+                    mobileNextBtn.classList.add("hidden");
+                    mobileNextBtn.classList.remove("flex");
+                }
+            }
+
+            const submitCountLabel = completed > 0 ? `Submit All (${completed}) to Study` : `Submit All to Study`;
+            if (desktopSubmitText) desktopSubmitText.textContent = submitCountLabel;
+            if (mobileSubmitText) mobileSubmitText.textContent = completed > 0 ? `Submit (${completed})` : `Submit All`;
+        }
+
+        function renderTNGReceiptCard(tx, idx, total) {
+            document.getElementById("activeQueuePositionBadge").textContent = `${idx + 1} / ${total}`;
+            document.getElementById("receiptAmount").textContent = tx.amount || 'Amount not detected';
+
+            // Populate Mobile Compact Summary Card
+            document.getElementById("mobileQueueBadge").textContent = `${idx + 1} / ${total}`;
+            document.getElementById("mobileOcrStatusBadge").textContent = tx.reviewed ? 'Reviewed' : (tx.ocrStatus || 'Needs Review');
+            document.getElementById("mobileSummaryAmount").textContent = tx.amount || 'Not detected';
+            document.getElementById("mobileSummaryType").textContent = tx.transactionType || 'Unknown type';
+            document.getElementById("mobileSummaryCounterparty").textContent = tx.counterparty || 'Merchant not detected';
+            document.getElementById("mobileSummaryDetails").textContent = tx.detailsValue ? `Details: ${tx.detailsValue}` : "No extra remarks";
+            document.getElementById("mobileSummaryDate").textContent = tx.dateTime || "";
+
+            const mobileThumbWrapper = document.getElementById("mobileThumbWrapper");
+            const mobileThumbImg = document.getElementById("mobileThumbImg");
+            if (tx.rawImageUrl) {
+                mobileThumbImg.src = tx.rawImageUrl;
+                mobileThumbWrapper.classList.remove("hidden");
+            } else {
+                mobileThumbWrapper.classList.add("hidden");
+            }
+
+            const ocrBadge = document.getElementById("ocrConfidenceBadge");
+            if (ocrBadge) {
+                ocrBadge.textContent = tx.reviewed ? 'Confirmed by participant' : (tx.ocrStatus || 'Needs Review');
+            }
+
+            const pointsEl = document.getElementById("receiptPointsBadge");
+            if (tx.pointsBadge) {
+                pointsEl.textContent = tx.pointsBadge;
+                pointsEl.classList.remove("hidden");
+            } else {
+                pointsEl.classList.add("hidden");
+            }
+
+            const imgContainer = document.getElementById("uploadedImageContainer");
+            const imgPreview = document.getElementById("uploadedImagePreview");
+            if (tx.rawImageUrl) {
+                imgPreview.src = tx.rawImageUrl;
+                imgContainer.classList.remove("hidden");
+            } else {
+                imgContainer.classList.add("hidden");
+            }
+
+            const rows = [];
+            const isDuitNow = (tx.transactionType || "").toLowerCase().includes("duitnow");
+            rows.push({
+                label: "Date / Time Bucket",
+                valueHtml: escapeHtml(tx.dateTime)
+            });
+
+            rows.push({
+                label: "Status",
+                valueHtml: escapeHtml(tx.status || "Successful")
+            });
+
+            if (tx.detailsLabel === "Remarks" && tx.detailsValue) {
+                rows.push({
+                    label: "Remarks (Sanitized)",
+                    valueHtml: escapeHtml(tx.detailsValue)
+                });
+            }
+
+            rows.push({
+                label: "Ref / Tx Numbers",
+                valueHtml: `<span class="text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Excluded from research export</span>`
+            });
+
+            if (Array.isArray(tx.reviewWarnings) && tx.reviewWarnings.length) {
+                rows.push({label:'Review Warnings', valueHtml:`<span class="text-amber-700">${escapeHtml(tx.reviewWarnings.join('; '))}</span>`});
+            }
+            rows.push({label:'Participant Review', valueHtml:tx.reviewed ? '<span class="text-emerald-700">Confirmed</span>' : '<span class="text-amber-700">Required — click Review</span>'});
+            document.getElementById("receiptRowsContainer").innerHTML = rows.map(r => `
+                <div class="py-3 flex items-start justify-between gap-4">
+                    <span class="text-slate-500 font-normal flex-shrink-0">${escapeHtml(r.label)}</span>
+                    <div class="text-slate-800 font-normal text-right">${r.valueHtml}</div>
+                </div>
+            `).join("");
+
+            const footerEl = document.getElementById("receiptFooter");
+            if (tx.footerType === "alipay") {
+                footerEl.innerHTML = `
+                    <div class="text-xs text-slate-500 flex items-center gap-1.5 py-2">
+                        <span>Powered by</span>
+                        <span class="font-extrabold text-[#0066CC] tracking-tight text-sm">Alipay<span class="text-sky-400">+</span></span>
+                    </div>
+                `;
+            } else if (tx.footerType === "favourites") {
+                footerEl.innerHTML = `
+                    <div class="w-full py-2.5 text-center rounded-full bg-blue-600 text-white font-semibold text-sm shadow-xs">
+                        Add To Favourites
+                    </div>
+                `;
+            } else {
+                footerEl.innerHTML = "";
+            }
+        }
+
+        function populateStreamlinedForm(tx, idx, total, completed) {
+            document.getElementById("smartPromptTitle").textContent = 
+                `Screenshot #${idx + 1}: ${tx.counterparty || tx.transactionType} (${tx.amount}) — Details: "${tx.detailsValue || 'None'}"`;
+            document.getElementById("smartPromptQuestion").textContent = 
+                `First tap Review to confirm the OCR result. Then provide your own Smart Note. OCR does not suggest a category.`;
+
+            document.getElementById("smartCategory").value = tx.category || "";
+            document.getElementById("smartNoteText").value = tx.smartNote || "";
+            updateCharCounter();
+
+            document.getElementById("prevBatchBtn").disabled = (idx === 0);
+            document.getElementById("nextBatchBtn").disabled = (idx === total - 1);
+
+            updateLiveSaveStatusUI(tx, idx, total, completed);
+        }
+
+        window.updateCharCounter = function() {
+            const val = (document.getElementById("smartNoteText").value || "").trim();
+            const words = val ? val.split(/\s+/).length : 0;
+            document.getElementById("smartNoteCharCount").textContent = `${val.length} chars (${words} words)`;
+        };
+
+        window.handlePrimaryFormAction = function(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (activeBatchIndex < batchQueue.length - 1) {
+                saveAndGoToNextScreenshot();
+            } else {
+                submitCompletedBatchToDatabase();
+            }
+        };
+
+        window.saveAndGoToNextScreenshot = function() {
+            syncDraftToActiveTransaction();
+            const currentTx = batchQueue[activeBatchIndex];
+            if (!currentTx) return;
+
+            if (!currentTx.reviewed) {
+                showToast('Please tap Review and confirm the extracted transaction details first.');
+                return;
+            }
+            if (!currentTx.smartNote || currentTx.smartNote.trim().length === 0) {
+                showToast("Please type a brief Smart Note for this screenshot before moving to the next one.");
+                document.getElementById("smartNoteText").focus();
+                return;
+            }
+
+            if (activeBatchIndex < batchQueue.length - 1) {
+                activeBatchIndex++;
+                renderBatchWorkspace();
+                showToast(`Note saved! Now viewing screenshot #${activeBatchIndex + 1} of ${batchQueue.length}.`);
+            } else {
+                renderBatchWorkspace();
+                showToast("Note saved! Click 'Submit All to Study' to finish.");
+            }
+        };
+
+        window.removeCurrentFromQueue = function() {
+            if (batchQueue.length === 0) return;
+            batchQueue.splice(activeBatchIndex, 1);
+            if (activeBatchIndex >= batchQueue.length) {
+                activeBatchIndex = Math.max(0, batchQueue.length - 1);
+            }
+            renderBatchWorkspace();
+            showToast("Removed screenshot from current queue.");
+        };
+
+        // ============================================================================
+        // 5. SUBMIT BATCH TO DEVELOPER DATASET (CLEAR COMPLETION SCREEN)
+        // ============================================================================
+        window.submitCompletedBatchToDatabase = async function() {
+            syncDraftToActiveTransaction();
+
+            const validItems = batchQueue.filter(item => item.reviewed && item.smartNote && item.smartNote.trim().length > 0 && /^[+\-]\s*(?:RM\s*)?\d/.test(item.amount || ''));
+            if (validItems.length === 0) {
+                showToast("Review the signed transaction amount and details, then provide a Smart Note before submitting.");
+                const noteInput = document.getElementById("smartNoteText");
+                if (noteInput) noteInput.focus();
+                return;
+            }
+
+            if (!db || !currentUser) {
+                localOcrMessage('Demo-only mode: no secure database is configured. Transaction details are NOT submitted. Export/recruitment must wait for a vetted backend.');
+                showToast('No database configured: submission blocked to avoid losing participant data.');
+                return;
+            }
+
+            const nowStr = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+            for (const item of validItems) {
+                const recordToSave = {
+                    ...item,
+                    participantId: currentParticipantId,
+                    submittedAt: nowStr
+                };
+                delete recordToSave.rawImageUrl;
+                delete recordToSave.rawFileName;
+                delete recordToSave.rawMimeType;
+                delete recordToSave.reviewWarnings;
+
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', FIRESTORE_COLLECTION_NAME, recordToSave.id);
+                    await setDoc(docRef, recordToSave);
+                } catch (err) {
+                    localOcrMessage('The server did not confirm that all records were saved. Keep this page open and try again.');
+                    showToast('Submission failed — not saved.');
+                    return;
+                }
+                const existingIdx = developerCollectedData.findIndex(d => d.id === recordToSave.id);
+                if (existingIdx > -1) developerCollectedData[existingIdx] = recordToSave;
+                else developerCollectedData.unshift(recordToSave);
+            }
+
+            // Remove submitted items from active queue and display the unambiguous Submission Complete screen
+            const submittedCount = validItems.length;
+            batchQueue = batchQueue.filter(item => !item.smartNote || item.smartNote.trim().length === 0);
+            activeBatchIndex = 0;
+
+            if (batchQueue.length === 0) {
+                showSubmissionSuccessBanner = true;
+                document.getElementById("submissionSuccessTitle").textContent = 
+                    `Submitted ${submittedCount} Transaction Smart Note${submittedCount > 1 ? 's' : ''} Successfully!`;
+            }
+
+            updateDeveloperBadgesAndTable();
+            renderBatchWorkspace();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast(`Successfully submitted ${submittedCount} Smart Note(s) to the study!`);
+
+            if (isDeveloperUnlocked && batchQueue.length === 0) {
+                switchMainView("developer");
+            }
+        };
+
+        // ============================================================================
+        // 6. DEVELOPER COLLECTED DATA TABLE & CSV EXPORT
+        // ============================================================================
+        function updateDeveloperBadgesAndTable() {
+            const total = developerCollectedData.length;
+            const devBadge = document.getElementById("devTotalBadge");
+            const devStatTotal = document.getElementById("devStatTotalRecords");
+            if (devBadge) devBadge.textContent = total;
+            if (devStatTotal) devStatTotal.textContent = total;
+
+            const uniqueParticipants = new Set(developerCollectedData.map(d => d.participantId).filter(Boolean)).size;
+            const devStatPart = document.getElementById("devStatParticipants");
+            if (devStatPart) devStatPart.textContent = uniqueParticipants;
+
+            let outflow = 0;
+            let inflow = 0;
+            developerCollectedData.forEach(d => {
+                const num = parseFloat((d.amount || "0").replace(/[^0-9.-]+/g, "")) || 0;
+                if ((d.amount || "").includes("-")) {
+                    outflow += Math.abs(num);
+                } else {
+                    inflow += Math.abs(num);
+                }
+            });
+
+            const outflowEl = document.getElementById("devStatOutflow");
+            const inflowEl = document.getElementById("devStatInflow");
+            if (outflowEl) outflowEl.textContent = `-RM${outflow.toFixed(2)}`;
+            if (inflowEl) inflowEl.textContent = `+RM${inflow.toFixed(2)}`;
+
+            renderDeveloperTable();
+        }
+
+        window.renderDeveloperTable = function() {
+            const tbody = document.getElementById("developerTableBody");
+            if (!tbody) return;
+
+            const searchVal = (document.getElementById("devSearchInput")?.value || "").toLowerCase();
+            const filterType = document.getElementById("devFilterType")?.value || "ALL";
+            const filterCat = document.getElementById("devFilterCategory")?.value || "ALL";
+
+            const filtered = developerCollectedData.filter(item => {
+                const matchesType = filterType === "ALL" || item.transactionType === filterType;
+                const matchesCat = filterCat === "ALL" || item.category === filterCat;
+                const hay = `${item.participantId} ${item.counterparty} ${item.detailsValue} ${item.smartNote} ${item.category}`.toLowerCase();
+                const matchesSearch = !searchVal || hay.includes(searchVal);
+                return matchesType && matchesCat && matchesSearch;
+            });
+
+            const countEl = document.getElementById("devShowingCount");
+            if (countEl) countEl.textContent = `Showing ${filtered.length} of ${developerCollectedData.length} records`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="py-10 text-center text-slate-400">
+                            No participant transaction Smart Notes submitted yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const isPositive = (item.amount || "").startsWith("+");
+                return `
+                    <tr class="hover:bg-slate-50/90 transition">
+                        <td class="py-3.5 px-4 font-bold text-xs text-slate-700 whitespace-nowrap">
+                            <span class="bg-slate-100 border border-slate-200 px-2 py-1 rounded-md">${escapeHtml(item.participantId || 'P-2026-089')}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-xs text-slate-500 whitespace-nowrap">${escapeHtml(item.dateTime || '')}</td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-700">${escapeHtml(item.transactionType || '')}</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-extrabold whitespace-nowrap ${isPositive ? 'text-emerald-600' : 'text-blue-600'}">
+                            ${escapeHtml(item.amount || '')}
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-800">${escapeHtml(item.counterparty || '-')}</td>
+                        <td class="py-3.5 px-4 text-xs text-slate-500 max-w-[170px] truncate" title="${escapeHtml(item.detailsValue || '')}">
+                            ${escapeHtml(item.detailsValue || '-')}
+                        </td>
+                        <td class="py-3.5 px-4 bg-blue-50/40 whitespace-nowrap">
+                            <span class="text-xs font-bold text-blue-900 bg-blue-100/90 border border-blue-200 px-2.5 py-1 rounded-lg">${escapeHtml(item.category || '')}</span>
+                        </td>
+                        <td class="py-3.5 px-4 bg-emerald-50/30 max-w-xs">
+                            <div class="font-semibold text-slate-900 leading-snug">${escapeHtml(item.smartNote || '')}</div>
+                        </td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                            <button onclick="deleteDeveloperRecord('${item.id}')" class="text-xs text-rose-500 hover:text-rose-700 font-semibold px-2 py-1 rounded hover:bg-rose-50 transition" title="Delete Record">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        };
+
+        window.deleteDeveloperRecord = async function(recordId) {
+            developerCollectedData = developerCollectedData.filter(d => d.id !== recordId);
+            if (db && currentUser) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', FIRESTORE_COLLECTION_NAME, recordId));
+                } catch (e) {}
+            }
+            updateDeveloperBadgesAndTable();
+            showToast("Record removed from Developer Dataset.");
+        };
+
+        window.exportDeveloperDataset = function(format) {
+            if (developerCollectedData.length === 0) {
+                showToast("No records available to export.");
+                return;
+            }
+
+            if (format === "json") {
+                const blob = new Blob([JSON.stringify(developerCollectedData, null, 2)], { type: "application/json" });
+                triggerDownload(blob, `smart_note_categorization_dataset_${Date.now()}.json`);
+                showToast("Exported Developer Dataset as JSON!");
+                return;
+            }
+
+            const headers = [
+                "RecordID",
+                "ParticipantID",
+                "SubmittedTimestamp",
+                "CoarseDateAndTimeBucket",
+                "RawTransactionType",
+                "Amount",
+                "CounterpartyLabel",
+                "MerchantOrAnonymizedPeer",
+                "SanitizedRemarksOrDetails",
+                "PaymentMethod",
+                "SpendingCategory",
+                "RealUserSmartNote",
+                "SmartNoteWordCount",
+                "SmartNoteCharLength"
+            ];
+
+            const rows = developerCollectedData.map(d => {
+                const noteText = (d.smartNote || "").trim();
+                const wordCount = noteText ? noteText.split(/\s+/).length : 0;
+                return [
+                    d.id,
+                    d.participantId || "P-2026-089",
+                    d.submittedAt || "",
+                    d.dateTime || "",
+                    d.transactionType || "",
+                    d.amount || "",
+                    d.counterpartyLabel || "",
+                    d.counterparty || "",
+                    d.detailsValue || "",
+                    d.paymentMethod || "",
+                    d.category || "",
+                    noteText,
+                    wordCount,
+                    noteText.length
+                ];
+            });
+
+            const csvContent = [
+                headers.join(","),
+                ...rows.map(r => r.map(field => `"${String(field ?? "").replace(/"/g, '""')}"`).join(","))
+            ].join("\n");
+
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            triggerDownload(blob, `smart_note_categorization_dataset_${Date.now()}.csv`);
+            showToast("Exported Developer Collected Data (.CSV)!");
+        };
+
+        function triggerDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================================================
+        // 7. MANUAL EDIT MODAL & UTILITIES
+        // ============================================================================
+        window.toggleEditReceiptModal = function() {
+            const modal = document.getElementById("editReceiptModal");
+            const activeTx = batchQueue[activeBatchIndex];
+            if (!activeTx) return;
+
+            if (modal.classList.contains("hidden")) {
+                document.getElementById("modalAmount").value = activeTx.amount || "";
+                document.getElementById("modalType").value = activeTx.transactionType || "";
+                document.getElementById("modalCounterparty").value = activeTx.counterparty || "";
+                document.getElementById("modalDateTime").value = activeTx.dateTime || "";
+                document.getElementById("modalDetails").value = activeTx.detailsValue || "";
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+            } else {
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+            }
+        };
+
+        window.applyManualReceiptEdits = function() {
+            const activeTx = batchQueue[activeBatchIndex];
+            if (!activeTx) return;
+
+            const enteredAmount = document.getElementById("modalAmount").value.trim();
+            const enteredType = document.getElementById("modalType").value.trim();
+            const enteredMerchant = document.getElementById("modalCounterparty").value.trim();
+            const validAmount = /^[+\-−]\s*(?:RM\s*)?\d+(?:,\d{3})*(?:\.\d{2})$/.test(enteredAmount) || /^RM\s*[+\-−]\s*\d+(?:,\d{3})*(?:\.\d{2})$/.test(enteredAmount);
+            const numericAmount = Number((enteredAmount || '').replace(/[^\d.]/g, ''));
+            if (!validAmount || !(numericAmount > 0)) {
+                showToast('Verify the signed main amount, e.g. -RM9.35 or +RM14.94.');
+                return;
+            }
+            if (!enteredType || (!enteredMerchant && !/^(?:Cashback|Refund)$/i.test(enteredType))) {
+                showToast('Verify transaction type and merchant/counterparty first.');
+                return;
+            }
+            if (!window.TNGLocalParser) {
+                showToast('OCR parser is missing; cannot sanitise extracted fields.');
+                return;
+            }
+            const isPeer = /(?:transfer|received)/i.test(enteredType);
+            activeTx.amount = enteredAmount.replace(/−/g, '-');
+            activeTx.transactionType = enteredType.slice(0, 80);
+            activeTx.counterparty = isPeer ? '[REDACTED PERSON]' : window.TNGLocalParser.sanitise(enteredMerchant);
+            activeTx.dateTime = window.TNGLocalParser.sanitise(document.getElementById("modalDateTime").value.trim()).slice(0, 50);
+            activeTx.detailsValue = window.TNGLocalParser.sanitise(document.getElementById("modalDetails").value.trim());
+            activeTx.reviewed = true;
+            activeTx.ocrStatus = 'Reviewed by participant';
+            activeTx.reviewWarnings = [];
+            toggleEditReceiptModal();
+            renderBatchWorkspace();
+            showToast('Transaction details confirmed.');
+        };
+
+        function escapeHtml(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById("toastNotification");
+            document.getElementById("toastMessage").textContent = msg;
+            toast.classList.remove("translate-y-24", "opacity-0");
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add("translate-y-24", "opacity-0");
+            }, 3400);
+        }
+
+        // Initialize App & Check for ?dev=1 Researcher Query Parameter
+        window.addEventListener("DOMContentLoaded", () => {
+            initFirebasePersistence();
+            updateDeveloperBadgesAndTable();
+
+            // Do not expose insecure admin-unlock query parameters.
+        });
+    </script>
+</body>
+</html>
